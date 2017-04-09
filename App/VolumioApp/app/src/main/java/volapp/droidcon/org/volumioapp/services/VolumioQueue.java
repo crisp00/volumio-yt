@@ -23,6 +23,7 @@ import io.socket.emitter.Emitter;
 public class VolumioQueue extends IntentService {
     enum STATE { INITIAL, CONNECTED, DISCONNECTED, ERROR};
 
+    private static final String TAG = VolumioQueue.class.getName();
     static STATE CurrentState = STATE.INITIAL;
     static Socket socket = null;
 
@@ -37,6 +38,7 @@ public class VolumioQueue extends IntentService {
     }
 
     private void openConnection() {
+        Log.d(TAG,"openConnection()");
         try {
             socket = IO.socket("http://192.168.1.162");
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
@@ -99,6 +101,7 @@ public class VolumioQueue extends IntentService {
     }
 
     public static void openConnection(Context context) {
+        Log.d(TAG,"openConnection");
         Intent intent = new Intent(context, VolumioQueue.class);
         intent.setAction(ACTION_OPEN_CONNECTION);
         context.startService(intent);
@@ -125,6 +128,7 @@ public class VolumioQueue extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG,"onHandleIntent()");
         if (intent != null) {
             final String action = intent.getAction();
             switch (action) {
@@ -132,7 +136,7 @@ public class VolumioQueue extends IntentService {
                 handleGetState();
                 break;
             case ACTION_OPEN_CONNECTION:
-                openConnection ();
+                openConnection();
                 break;
             case ACTION_GET_QUEUE:
                 getQueue ();
