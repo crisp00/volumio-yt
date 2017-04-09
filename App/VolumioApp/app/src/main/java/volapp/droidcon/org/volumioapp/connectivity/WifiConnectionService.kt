@@ -6,19 +6,16 @@ import android.content.Context
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.info
 import org.jetbrains.anko.wifiManager
 
 /**
  * An [IntentService] subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- *
- *
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 class WifiConnectionService : IntentService("WifiConnectionService"),AnkoLogger {
-    private val wifiSsid = "Volumio"
+    private val wifiSsid = "Volumio 2P"
     private val wifiPass = "volumio2"
     private val wifiConf by lazy { WifiConfiguration() }
 
@@ -30,8 +27,12 @@ class WifiConnectionService : IntentService("WifiConnectionService"),AnkoLogger 
                 wifiConf.SSID = "\"${wifiSsid}\""
                 wifiConf.preSharedKey = "\"${wifiPass}\""
 
-                val list = wifiManager.configuredNetworks
-
+                if (wifiManager.connectionInfo.ssid == "Volumio 2P"){
+                    debug("Already connected to Volumio 2P")
+                    return
+                }else{
+                    debug { "Not connected, connected to ${wifiManager.connectionInfo.ssid}" }
+                }
 //              AnkoWifiManager Creates this
 //              val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
                 val networkId = wifiManager.addNetwork(wifiConf)
@@ -47,8 +48,8 @@ class WifiConnectionService : IntentService("WifiConnectionService"),AnkoLogger 
                     reconnect()
                     info("Current Connection is ${connectionInfo.ssid} after reconnecting")
                 }
-                for (i in list) {
-                    info("The networks in the list are - SSID ${i.SSID} Network ID :${i.networkId}")
+//                for (i in list) {
+//                    info("The networks in the list are - SSID ${i.SSID} Network ID :${i.networkId}")
 //                    if (i.SSID != null && i.SSID == wifiConf.SSID) {
 //                        with(wifiManager) {
 //                            disconnect()
@@ -57,8 +58,7 @@ class WifiConnectionService : IntentService("WifiConnectionService"),AnkoLogger 
 //                            info("Trying to reconnect with id ${i.networkId}")
 //                        }
 
-                }
-
+//                }
             } else if (ACTION_BAZ == action) {
             }
         }

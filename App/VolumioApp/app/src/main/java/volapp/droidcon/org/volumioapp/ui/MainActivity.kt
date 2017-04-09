@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.toast
 import volapp.droidcon.org.volumioapp.R
 
 import volapp.droidcon.org.volumioapp.connectivity.WifiConnectionService
@@ -17,10 +16,12 @@ import android.support.v4.content.LocalBroadcastManager
 import android.content.IntentFilter
 import android.content.BroadcastReceiver
 import android.content.Context
+import org.jetbrains.anko.*
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),AnkoLogger {
     lateinit var listAdapter: SongsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,19 +45,26 @@ class MainActivity : AppCompatActivity() {
         var song = Song( "Song 1", "PATH", false, false)
         list += song
         with (rwSongList) {
-            setHasFixedSize(true)
+//            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(this@MainActivity)
             listAdapter = SongsAdapter(list){
                 toast("The ${it.name} was clicked. Its path is ${it.path}")
             }
             adapter = listAdapter
         }
-        //startConnection()
+        startConnection()
 
         VolumioQueue.openConnection(this@MainActivity)
     }
 
-    private fun startConnection() = WifiConnectionService.startActionConnect(this)
+    private fun startConnection(){
+        info("The SSID: ${wifiManager.connectionInfo.ssid}")
+//        If Connected to Volumio 2P already, don't connect.
+        if (wifiManager.connectionInfo.ssid == "Volumio 2P"){
+            info("Inside the IF statement, connecting to the network.")
+            WifiConnectionService.startActionConnect(this)
+        }
+    }
 
     override fun onPause() {
         // Unregister since the activity is not visible
@@ -77,35 +85,48 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             // Extract data included in the Intent
             val message = intent.getStringExtra("status")
+            debug("Got message $message")
             //Log.d("receiver", "Got message: " + message)
             when (message) {
                 "CONNECTED" -> {
+                    info("CONNECTED")
                     VolumioQueue.startGetQueue(this@MainActivity)
                     //VolumioQueue.startGetState(this@MainActivity)
                 }
                 "PUSH_STATE" -> {
+                    info("PUSH_STATE")
                     VolumioQueue.startGetQueue(this@MainActivity)
                 }
                 "PUSH_QUEUE" -> {
+                    info("PUSH_QUEUE")
                     val list: MutableList<Song> = mutableListOf()
                     list.clear()
                     val jsonData = intent.getStringExtra("data")
                     val data: JSONArray = JSONArray(jsonData)
                     var i = 0
                     while (i < data.length()) {
-                        //var song = Song( JSONObject.cast(data[i]).."Song 1", "PATH", false, false)
-                        //list += song
-                        ++i;
+                        info("First element ${data[0]}")
+                        val jsonObject = data.getJSONObject(i)
+//                        val jsonObject = JSONObject().getJSONObject(data.toString())
+                        info("The URI is ${jsonObject["uri"]}")
+                        val song = Song(
+                                name = "${jsonObject["name"]}",
+                                path=jsonObject["uri"].toString()
+                        )
+
+                        list.add(song)
+                        i++
                     }
-                    var song = Song( "Song 1", "PATH", false, false)
-                    list += song
+//                    var song = Song( "Song 1", "PATH", false, false)
+//                    list += song
                     with (rwSongList) {
-                        setHasFixedSize(true)
+//                        setHasFixedSize(true)
                         layoutManager = LinearLayoutManager(this@MainActivity)
                         listAdapter = SongsAdapter(list){
                             toast("The ${it.name} was clicked. Its path is ${it.path}")
                         }
                         adapter = listAdapter
+                        adapter.notifyDataSetChanged()
                     }
                 }
             }
