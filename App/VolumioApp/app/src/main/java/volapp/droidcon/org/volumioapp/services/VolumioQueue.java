@@ -30,6 +30,8 @@ public class VolumioQueue extends IntentService {
     public static final String ACTION_OPEN_CONNECTION = "openConnection";
     public static final String ACTION_GET_STATE = "getState";
     public static final String ACTION_GET_QUEUE = "getQueue";
+    public static final String ACTION_PLAY_URL = "playUrl";
+    public static final String ACTION_GET_CURRENT_STATUS = "getCurrentStatus";
 
     public VolumioQueue() {
         super("VolumioQueue");
@@ -111,6 +113,19 @@ public class VolumioQueue extends IntentService {
         context.startService(intent);
     }
 
+    public static void startPlayingUrl(Context context, String url) {
+        Intent intent = new Intent(context, VolumioQueue.class);
+        intent.setAction(ACTION_PLAY_URL);
+        intent.putExtra("URL", url);
+        context.startService(intent);
+    }
+
+    public static void ReadCurrentStatus(Context context) {
+        Intent intent = new Intent(context, VolumioQueue.class);
+        intent.setAction(ACTION_GET_CURRENT_STATUS);
+        context.startService(intent);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG,"onHandleIntent()");
@@ -125,6 +140,13 @@ public class VolumioQueue extends IntentService {
                 break;
             case ACTION_GET_QUEUE:
                 getQueue ();
+                break;
+            case ACTION_PLAY_URL:
+                String url = intent.getExtras().getString("URL");
+                playUrl (url);
+                break;
+            case ACTION_GET_CURRENT_STATUS:
+                SendCurrentStatus();
                 break;
             }
         }
@@ -141,6 +163,21 @@ public class VolumioQueue extends IntentService {
     private void getQueue() {
         if (CurrentState == STATE.CONNECTED) {
             socket.emit("getQueue", "[]");
+        } else {
+            // Do something
+        }
+    }
+
+    private void playUrl(String url) {
+        if (CurrentState == STATE.CONNECTED) {
+            try {
+
+                JSONObject obj = new JSONObject();
+                obj.put("endpoint", "music_service/PiYoutubeQueue");
+                obj.put("method", "play");
+                obj.put("data", url);
+                socket.emit("callMethod", obj);
+            } catch (Exception ex) {}
         } else {
             // Do something
         }
