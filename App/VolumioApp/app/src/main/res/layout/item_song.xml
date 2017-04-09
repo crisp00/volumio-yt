@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="32dp"
+    android:layout_height="46dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     >
     <ImageView
         android:id="@+id/iconSong"
@@ -17,6 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:text="No Digity by Ed Sheeran"
-        android:textSize="20sp"/>
+        android:textSize="24sp"/>
 
 </LinearLayout>

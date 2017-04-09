@@ -30,6 +30,12 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'org.jetbrains.anko:anko-sdk15:0.9.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.malinskiy:superrecyclerview:1.1.4'
+
+    compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.5@aar'){
+        transitive=true
+    }
+
 
     testCompile 'junit:junit:4.12'
 

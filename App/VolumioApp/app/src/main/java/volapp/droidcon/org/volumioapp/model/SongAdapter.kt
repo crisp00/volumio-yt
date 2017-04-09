@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_song.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.image
+import org.jetbrains.anko.imageResource
 import volapp.droidcon.org.volumioapp.R
 
 /**
@@ -32,7 +34,9 @@ class SongsAdapter(val itemList: List<Song>, val listener: (Song) -> Unit) :
                 itemTextId.text = song.name
                 if (song.isPlaying){
 //                    Set the image to PlayButton
-//                    iconSong.image =
+                    iconSong.imageResource = R.drawable.ic_play_arrow_black_36dp
+                }else{
+                    iconSong.imageResource = R.drawable.ic_music_video_black_36dp
                 }
                 setOnClickListener { listener(song) }
             }

@@ -16,13 +16,60 @@ import android.support.v4.content.LocalBroadcastManager
 import android.content.IntentFilter
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.support.v7.recyclerview.R.attr.layoutManager
 import org.jetbrains.anko.*
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
+import android.support.v7.widget.DividerItemDecoration
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+
 
 class MainActivity : AppCompatActivity(),AnkoLogger {
     lateinit var listAdapter: SongsAdapter
+    lateinit var pwd:String
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        when (item.getItemId()) {
+            R.id.become_admin -> {
+                showPasswdDialog()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun becomeAdmin(pwd:String) {
+        if (pwd == "Volumio2"){
+            toast("You are an admin now")
+        }else{
+            toast("Wrong Password")
+        }
+    }
+
+    private fun showPasswdDialog(){
+        alert {
+            customView {
+                val pwdText = editText{
+                    title("Enter Password:")
+                }
+                yesButton {
+                    pwd = pwdText.text.toString()
+                    becomeAdmin(pwd)
+                }
+            }
+        }.show()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,9 +156,14 @@ class MainActivity : AppCompatActivity(),AnkoLogger {
                         val jsonObject = data.getJSONObject(i)
 //                        val jsonObject = JSONObject().getJSONObject(data.toString())
                         info("The URI is ${jsonObject["uri"]}")
+                        var songIsPlaying = false
+                        if (i == 0){
+                            songIsPlaying = true
+                        }
                         val song = Song(
                                 name = "${jsonObject["name"]}",
-                                path=jsonObject["uri"].toString()
+                                path=jsonObject["uri"].toString(),
+                                isPlaying = songIsPlaying
                         )
 
                         list.add(song)
@@ -121,7 +173,12 @@ class MainActivity : AppCompatActivity(),AnkoLogger {
 //                    list += song
                     with (rwSongList) {
 //                        setHasFixedSize(true)
-                        layoutManager = LinearLayoutManager(this@MainActivity)
+//                        layoutManager = LinearLayoutManager(this@MainActivity)
+                        var mLayoutmanager = layoutManager
+                        mLayoutmanager = LinearLayoutManager(this@MainActivity)
+                        val orientation = mLayoutmanager.orientation
+                        val dividerItemDecoration = DividerItemDecoration(rwSongList.context,orientation)
+                        addItemDecoration(dividerItemDecoration)
                         listAdapter = SongsAdapter(list){
                             toast("The ${it.name} was clicked. Its path is ${it.path}")
                         }

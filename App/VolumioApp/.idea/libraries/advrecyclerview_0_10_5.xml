@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="advrecyclerview-0.10.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/26c453e99380a8b6a715d7814df9ef2d0f5680cb/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/26c453e99380a8b6a715d7814df9ef2d0f5680cb/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.h6ah4i.android.widget.advrecyclerview/advrecyclerview/0.10.5/fc754843c1e66e92e031f5f677c3b40700b2d790/advrecyclerview-0.10.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

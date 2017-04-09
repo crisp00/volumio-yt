@@ -9,7 +9,21 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rwSongList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
     </android.support.v7.widget.RecyclerView>
+
+    <!--<com.malinskiy.superrecyclerview.SuperRecyclerView-->
+        <!--android:id="@+id/rwSongList"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:layout_empty="@layout/emptyview"-->
+        <!--app:layout_moreProgress="@layout/view_more_progress"-->
+        <!--app:recyclerClipToPadding="false"-->
+        <!--app:recyclerPadding="16dp"-->
+        <!--app:scrollbarStyle="insideInset"-->
+        <!--&gt;-->
+
+    <!--</com.malinskiy.superrecyclerview.SuperRecyclerView>-->
 </LinearLayout>
