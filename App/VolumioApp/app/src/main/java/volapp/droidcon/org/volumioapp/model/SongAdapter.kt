@@ -19,6 +19,7 @@ class SongsAdapter(val itemList: List<Song>, val listener: (Song) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
             = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_song,parent,false))
 
+
     override fun getItemCount(): Int = itemList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)

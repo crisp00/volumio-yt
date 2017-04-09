@@ -32,6 +32,13 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
 
     testCompile 'junit:junit:4.12'
+
+    apply plugin: 'kotlin-android-extensions'
+
+    compile ('io.socket:socket.io-client:0.8.3') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }
 repositories {
     mavenCentral()

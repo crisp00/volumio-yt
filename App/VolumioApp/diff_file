@@ -1,0 +1,108 @@
+diff --git a/App/VolumioApp/app/build.gradle b/App/VolumioApp/app/build.gradle
+index 2d896e1..ccb73be 100644
+--- a/App/VolumioApp/app/build.gradle
++++ b/App/VolumioApp/app/build.gradle
+@@ -27,4 +27,9 @@ dependencies {
+     compile 'com.android.support:appcompat-v7:25.3.1'
+     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+     testCompile 'junit:junit:4.12'
++
++    compile ('io.socket:socket.io-client:0.8.3') {
++        // excluding org.json which is provided by Android
++        exclude group: 'org.json', module: 'json'
++    }
+ }
+diff --git a/App/VolumioApp/app/src/main/AndroidManifest.xml b/App/VolumioApp/app/src/main/AndroidManifest.xml
+index 0d41ae0..751bf54 100644
+--- a/App/VolumioApp/app/src/main/AndroidManifest.xml
++++ b/App/VolumioApp/app/src/main/AndroidManifest.xml
+@@ -2,6 +2,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="volapp.droidcon.org.volumioapp">
+ 
++    <uses-permission android:name="android.permission.INTERNET" />
+     <application
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+@@ -12,7 +13,6 @@
+         <activity android:name=".MainActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+-
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
+diff --git a/App/VolumioApp/app/src/main/java/volapp/droidcon/org/volumioapp/MainActivity.java b/App/VolumioApp/app/src/main/java/volapp/droidcon/org/volumioapp/MainActivity.java
+index b70c71f..a083c37 100644
+--- a/App/VolumioApp/app/src/main/java/volapp/droidcon/org/volumioapp/MainActivity.java
++++ b/App/VolumioApp/app/src/main/java/volapp/droidcon/org/volumioapp/MainActivity.java
+@@ -2,6 +2,11 @@ package volapp.droidcon.org.volumioapp;
+ 
+ import android.support.v7.app.AppCompatActivity;
+ import android.os.Bundle;
++import android.util.Log;
++
++import io.socket.client.IO;
++import io.socket.client.Socket;
++import io.socket.emitter.Emitter;
+ 
+ public class MainActivity extends AppCompatActivity {
+ 
+@@ -9,5 +14,57 @@ public class MainActivity extends AppCompatActivity {
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
++
++        try {
++            //final Socket socket = IO.socket("http://connectivitycheck.gstatic.commm");
++            final Socket socket = IO.socket("http://192.168.211.1");
++            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
++
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Connected ...");
++                    socket.emit("getState", "[]");
++                    //socket.emit("next");
++                    //socket.disconnect();
++                }
++
++            }).on("event", new Emitter.Listener() {
++
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Call ... something ");
++                }
++
++            }).on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
++
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Call ... something ");
++                }
++
++            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
++
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Disconnecting ...");
++                }
++
++            }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
++
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Error ...");
++                }
++
++            }).on("pushState", new Emitter.Listener() {
++                @Override
++                public void call(Object... args) {
++                    Log.d("TOQU", "Device Info ...");
++                }
++            });
++            socket.connect();
++        } catch (Exception ex) {
++            Log.d("TOQU", "Exception: " + ex.getMessage());
++        }
+     }
+ }
